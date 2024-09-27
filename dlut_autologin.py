@@ -35,7 +35,7 @@ def get_local_ip():
             for address in interface_addresses:
                 # 检查是否是IPv4地址且是校园网IP
                 if address.family == socket.AF_INET and address.address.startswith(
-                    "172."
+                    ("172.", "192.168.")
                 ):
                     ip_list.append(address.address)
                     print(
