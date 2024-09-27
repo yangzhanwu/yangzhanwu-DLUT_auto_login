@@ -8,6 +8,7 @@ import json
 import psutil
 import getpass
 import socket
+import os
 from des import str_enc
 
 # 正则表达式匹配IPv4地址
@@ -246,9 +247,16 @@ def main():
     parser.add_argument("-u", "--username", type=str, help="The username")
     parser.add_argument("-p", "--password", type=str, help="The password")
     parser.add_argument("-i", "--ip", type=str, help="The IP address")
+    parser.add_argument("-r", "--refresh", action="store_true", help="Whether or not refresh all the adapters before log in")
 
     # 解析命令行参数
     args = parser.parse_args()
+
+    if args.refresh:
+        print("Refreshing adapters...")
+        os.popen("ipconfig /release", 'r')
+        os.popen("ipconfig /renew", 'r')
+        time.sleep(3)
 
     if args.ip:
         print(login(args.username, args.password, args.ip))
