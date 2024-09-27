@@ -254,8 +254,8 @@ def main():
 
     if args.refresh:
         print("Refreshing adapters...")
-        os.popen("ipconfig /release", 'r')
-        os.popen("ipconfig /renew", 'r')
+        os.popen("ipconfig /release")
+        os.popen("ipconfig /renew")
         time.sleep(3)
 
     if args.ip:
