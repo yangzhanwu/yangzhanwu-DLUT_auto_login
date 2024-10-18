@@ -9,6 +9,7 @@ import psutil
 import getpass
 import socket
 import os
+import sys
 from des import str_enc
 
 # 正则表达式匹配IPv4地址
@@ -223,7 +224,7 @@ def login(username, password, ip):
             if do_login(username, password, ip):
                 break
             else:
-                return f"ip: {ip}, Login failed!"
+                return (-1, f"ip: {ip}, Login failed!")
 
         except Exception as e:
             # 如果操作失败，打印错误消息（或进行其他错误处理）
@@ -232,10 +233,10 @@ def login(username, password, ip):
             time.sleep(3)  # 等待3秒
 
     if attempt_count == max_attempts:
-        return f"ip: {ip}, Reached the maximum number of login attempts, login failed!"
+        return (-1,f"ip: {ip}, Reached the maximum number of login attempts, login failed!")
     else:
         return (
-            f"ip: {ip}, Please confirm if have successfully connected to the network."
+            0, f"ip: {ip}, Please confirm if have successfully connected to the network."
         )
 
 
@@ -258,16 +259,23 @@ def main():
         os.popen("ipconfig /renew")
         time.sleep(3)
 
+    ret_value = -1
+
     if args.ip:
-        print(login(args.username, args.password, args.ip))
+        ret, msg = login(args.username, args.password, args.ip)
+        ret_value = ret
+        print(msg)
     else:
         ip_list = get_local_ip()
         result = []
         for ip in ip_list:
             result.append(login(args.username, args.password, ip))
-        for r in result:
+        for ret, r in result:
             print(r)
+            if ret == 0:
+                ret_value = 0
 
+    return ret_value
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

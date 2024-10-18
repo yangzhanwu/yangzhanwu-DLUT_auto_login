@@ -16,9 +16,8 @@
 
 ## 使用方法
 - 通过`pip install -r requirements.txt`或手动安装所需库
-- 使用示例：`python dlut_autologin.py [-r] [-u username] [-p password] [-i IP]`
+- 使用示例：`python dlut_autologin.py [-u username] [-p password] [-i IP]`
 - 参数为校园网账户和密码和当前设备的校园IP地址，因为校园网在未登录时已获取IP，设备可通过`ipconfig/ifconfig/ip addr show`等命令获取，此参数若未给出则通过脚本中的函数自动获取。如果没在命令中给出账户和密码，则会在运行时提示输入。
-- `-r`参数指定在登陆尝试前调用`ipconfig /release`/`/renew`，实现类似插拔网线，对适配器做刷新操作
 - ~~dist文件夹下的可执行文件是本人在m2的macmini生成的，也许可以直接使用，并未进行测试~~
 - ~~des.js里包含了加密算法，通过chatgpt已将`des.js`转为`des.py`~~
 
