@@ -5,3 +5,4 @@ lib
 pyvenv.cfg
 dlut_autologin.spec
 build
+__pycache__

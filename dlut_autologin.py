@@ -8,6 +8,8 @@ import json
 import psutil
 import getpass
 import socket
+import os
+import sys
 from des import str_enc
 
 # 正则表达式匹配IPv4地址
@@ -34,7 +36,7 @@ def get_local_ip():
             for address in interface_addresses:
                 # 检查是否是IPv4地址且是校园网IP
                 if address.family == socket.AF_INET and address.address.startswith(
-                    "172."
+                    ("172.", "192.168.")
                 ):
                     ip_list.append(address.address)
                     print(
@@ -222,7 +224,7 @@ def login(username, password, ip):
             if do_login(username, password, ip):
                 break
             else:
-                return f"ip: {ip}, Login failed!"
+                return (-1, f"ip: {ip}, Login failed!")
 
         except Exception as e:
             # 如果操作失败，打印错误消息（或进行其他错误处理）
@@ -231,10 +233,10 @@ def login(username, password, ip):
             time.sleep(3)  # 等待3秒
 
     if attempt_count == max_attempts:
-        return f"ip: {ip}, Reached the maximum number of login attempts, login failed!"
+        return (-1,f"ip: {ip}, Reached the maximum number of login attempts, login failed!")
     else:
         return (
-            f"ip: {ip}, Please confirm if have successfully connected to the network."
+            0, f"ip: {ip}, Please confirm if have successfully connected to the network."
         )
 
 
@@ -246,20 +248,34 @@ def main():
     parser.add_argument("-u", "--username", type=str, help="The username")
     parser.add_argument("-p", "--password", type=str, help="The password")
     parser.add_argument("-i", "--ip", type=str, help="The IP address")
+    parser.add_argument("-r", "--refresh", action="store_true", help="Whether or not refresh all the adapters before log in")
 
     # 解析命令行参数
     args = parser.parse_args()
 
+    if args.refresh:
+        print("Refreshing adapters...")
+        os.popen("ipconfig /release")
+        os.popen("ipconfig /renew")
+        time.sleep(3)
+
+    ret_value = -1
+
     if args.ip:
-        print(login(args.username, args.password, args.ip))
+        ret, msg = login(args.username, args.password, args.ip)
+        ret_value = ret
+        print(msg)
     else:
         ip_list = get_local_ip()
         result = []
         for ip in ip_list:
             result.append(login(args.username, args.password, ip))
-        for r in result:
+        for ret, r in result:
             print(r)
+            if ret == 0:
+                ret_value = 0
 
+    return ret_value
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
